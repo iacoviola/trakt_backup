@@ -101,7 +101,6 @@ else:
 
 print(f'Files will be saved in: {root}')
 
-
 if len(sys.argv) > 1:
     username = sys.argv[1]
 else:

@@ -108,7 +108,7 @@ else:
     username = input('Enter your Trakt username: ')
 
 if len(sys.argv) > 2 and sys.argv[2] in accepted_file_types:
-    file_type = sys.argv[2]
+    file_type = sys.argv[2].lower()
 else:
     print('Unsupported or no file type specified, defaulting to json')
     file_type = 'json'

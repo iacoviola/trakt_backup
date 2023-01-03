@@ -100,5 +100,5 @@ username = ''
 headers = {
     'Content-Type': 'application/json',
     'trakt-api-version': '2',
-    'trakt-api-key': ''
+    'trakt-api-key': '338de75a0ffb0ea460fdcbb8f82b0b41bbeb8bde098f1a664e7fcfac6c736c07'
 }

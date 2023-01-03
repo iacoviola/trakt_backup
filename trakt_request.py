@@ -100,5 +100,5 @@ username = ''
 headers = {
     'Content-Type': 'application/json',
     'trakt-api-version': '2',
-    'trakt-api-key': ''
+    'trakt-api-key': 'PASTE ME HERE'
 }

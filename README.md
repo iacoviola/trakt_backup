@@ -12,7 +12,7 @@
 > <li>From the menu bar choose <a href="https://trakt.tv/oauth/applications">Your API apps</a></li>
 > <li>Press on <a href="https://trakt.tv/oauth/applications/new">NEW APPLICATION</a></li>
 > <li>Fill in the required fields <b>(Name, Description and Redirect URI)</b> and then press <b>SAVE APP</b> at the bottom of the page</li>
-> <li>In the next section copy the <b>Client ID</b> string and paste it at the bottom of the <b>trakt_requests.py</b> file where indicated.</li>
+> <li>In the next section copy the <b>Client ID</b> string and paste it at the bottom of the <b>trakt_request.py</b> file where indicated.</li>
 > </ul>
 > <img width="433" alt="Screenshot 2023-01-03 at 4 39 58 PM" src="https://user-images.githubusercontent.com/26089090/210390686-14160db7-53e8-4481-a1db-8aca23e9647e.png">
 

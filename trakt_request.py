@@ -12,10 +12,10 @@ def create_data_files(usr, root):
     global root_path
     root_path = root
 
-    get_watched_movies()
-    get_watched_episodes()
+    """ get_watched_movies()
+    get_watched_episodes() """
     get_watched_shows()
-    get_movies_ratings()
+    """ get_movies_ratings()
     get_episodes_ratings()
     get_shows_ratings()
     get_seasons_ratings()
@@ -27,7 +27,7 @@ def create_data_files(usr, root):
     get_movies_collection()
     get_episodes_collection()
     get_shows_collection()
-    get_user_stats()
+    get_user_stats() """
 
 def get(action, type):
     print(f'Obtaining: {url}/{action}/{type}')

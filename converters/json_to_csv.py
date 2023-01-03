@@ -7,18 +7,18 @@ def flatten_json(item, prev_key=None):
     for key, value in item.items():
         if isinstance(value, list):
             for i, it in enumerate(value):
-                item_record = flatten_json(it, f'{key}_{i + 1}')
+                item_record = flatten_json(it, f'{key}/{i + 1}')
                 for key_nest, value_nest in item_record.items():
                     if prev_key is not None:
                         record[f'{prev_key}_{key}_{i + 1}_{key_nest}'] = value_nest
                     else:
                         record[f'{key}_{key_nest}'] = value_nest
-        elif not isinstance(value, dict):
-            record[key] = value
-        else:
-            record_nest = flatten_json(value, key)
+        elif isinstance(value, dict):
+            record_nest = flatten_json(value)
             for key_nest, value_nest in record_nest.items():
                 record[f'{key}_{key_nest}'] = value_nest
+        else:
+            record[key] = value
     return record
 
 def get_dataframe_csv(path, file):

@@ -5,6 +5,7 @@ import subprocess
 import trakt_request
 import converters.json_to_csv as jtc
 import converters.json_to_xml as jtx
+import argparse
 
 accepted_file_types = ['json', 'csv', 'xml']
 
@@ -30,13 +31,20 @@ def convert(file_type, path):
         if not file.startswith('stats'):
             os.remove(os.path.join(path, file))
 
-# Check if the API key is valid
-if len(trakt_request.headers['trakt-api-key']) != 64:
-    print('Invalid Trakt API key, please check your trakt_request.py file')
-    sys.exit()
+argparser = argparse.ArgumentParser(description='Backup your Trakt data')
+# -Y or --yes to save files in the current working directory (optional)
+argparser.add_argument('-Y', '--yes', action='store_true', help='Save files in the current working directory', required=False)
+# Positional argument for the username (optional)
+argparser.add_argument('username', nargs='?', help='Your Trakt username')
+# Positional argument for the file type (optional)
+argparser.add_argument('filetype', nargs='?', help='File type to save your data in (json, csv, xml)')
+args = argparser.parse_args()
 
-# Ask the user if he wants to save the files in the current working directory
-folder = input(f"Save files here (shell current working directory) ? [Y/n]\n(files will otherwise be saved in {os.path.expanduser('~')}): ")
+# Ask the user if they want to save the files in the current working directory
+if not args.yes:
+    folder = input(f"Save files here (shell current working directory) ? [Y/n]\n(files will otherwise be saved in {os.path.expanduser('~')}): ")
+else:
+    folder = 'Y'
 
 if folder.upper() == 'Y':
     root = os.getcwd()
@@ -47,13 +55,13 @@ else:
 
 print(f'Files will be saved in: {root}')
 
-if len(sys.argv) > 1:
-    username = sys.argv[1]
+if args.username:
+    username = args.username
 else:
     username = input('Enter your Trakt username: ')
 
-if len(sys.argv) > 2 and sys.argv[2] in accepted_file_types:
-    file_type = sys.argv[2].lower()
+if args.filetype and args.filetype in accepted_file_types:
+    file_type = args.filetype.lower()
 else:
     print('Unsupported or no file type specified, defaulting to json')
     file_type = 'json'

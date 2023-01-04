@@ -1,4 +1,4 @@
-# trakt_backup
+# Trakt Backup
 
 ## Usage
 
@@ -14,7 +14,7 @@
 > <li>Fill in the required fields <b>(Name, Description and Redirect URI)</b> and then press <b>SAVE APP</b> at the bottom of the page</li>
 > <li>In the next section copy the <b>Client ID</b> string and paste it at the bottom of the <b>trakt_request.py</b> file where indicated.</li>
 > </ul>
-> <img width="433" alt="Screenshot 2023-01-03 at 4 39 58 PM" src="https://user-images.githubusercontent.com/26089090/210390686-14160db7-53e8-4481-a1db-8aca23e9647e.png">
+> <img width="433" alt="Screenshot 2023-01-03 at 4 39 58 PM" src="https://user-images.githubusercontent.com/26089090/210547593-d7103e6e-f562-43a9-8436-386cc34a4314.png">
 
 
 <ul>

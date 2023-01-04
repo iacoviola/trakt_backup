@@ -31,6 +31,11 @@ def convert(file_type, path):
         if not file.startswith('stats'):
             os.remove(os.path.join(path, file))
 
+# Check if the API key is valid
+if len(trakt_request.headers['trakt-api-key']) != 64:
+    print('Invalid Trakt API key, please check your trakt_request.py file')
+    sys.exit()
+
 argparser = argparse.ArgumentParser(description='Backup your Trakt data')
 # -Y or --yes to save files in the current working directory (optional)
 argparser.add_argument('-Y', '--yes', action='store_true', help='Save files in the current working directory', required=False)

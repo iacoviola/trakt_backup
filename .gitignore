@@ -131,3 +131,4 @@ dmypy.json
 #other
 .DS_Store
 .vscode/
+trakt_backup/

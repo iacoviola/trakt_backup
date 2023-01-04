@@ -3,7 +3,6 @@ import os
 import sys
 import subprocess
 import trakt_request
-import pandas
 import converters.json_to_csv as jtc
 import converters.json_to_xml as jtx
 
@@ -31,6 +30,12 @@ def convert(file_type, path):
         if not file.startswith('stats'):
             os.remove(os.path.join(path, file))
 
+# Check if the API key is valid
+if len(trakt_request.headers['trakt-api-key']) != 64:
+    print('Invalid Trakt API key, please check your trakt_request.py file')
+    sys.exit()
+
+# Ask the user if he wants to save the files in the current working directory
 folder = input(f"Save files here (shell current working directory) ? [Y/n]\n(files will otherwise be saved in {os.path.expanduser('~')}): ")
 
 if folder.upper() == 'Y':

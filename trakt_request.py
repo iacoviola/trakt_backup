@@ -29,6 +29,7 @@ def create_data_files(usr, root):
     get_shows_collection()
     get_user_stats()
 
+# Get data from trakt api by specifying the action and type of media
 def get(action, type):
     print(f'Obtaining: {url}/{action}/{type}')
     response = requests.get(f'{url}/{action}/{type}?limit=100000' , headers=headers)
@@ -93,12 +94,19 @@ def get_shows_collection():
 def get_user_stats():
     get('stats', '')
 
+# Trakt request base url
 url = 'https://api.trakt.tv/users'
+# Backup absolute path
 root_path = ''
+# Trakt username to get data from
 username = ''
 
+# Trakt request required headers
 headers = {
+    # Trakt return a json response
     'Content-Type': 'application/json',
+    # Trakt api version
     'trakt-api-version': '2',
-    'trakt-api-key': 'PASTE ME HERE'
+    # Trakt api key
+    'trakt-api-key': '' # Your trakt api key
 }

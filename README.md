@@ -1,56 +1,69 @@
 # Trakt Backup
 
-## Usage
+> Backup user data from Trakt into JSON/CSV/XML format
 
-> **Note** <br>
-> <b>First you need to generate your own API key on trakt's website. </b><br>
-> Instructions:
-> <ul>
-> <li>Go to <a href="https://trakt.tv">trakt.tv</a></li>
-> <li>Login with your account</li>
-> <li>From the menu in the top right corner select <a href="https://trakt.tv/settings">Settings</a></li>
-> <li>From the menu bar choose <a href="https://trakt.tv/oauth/applications">Your API apps</a></li>
-> <li>Press on <a href="https://trakt.tv/oauth/applications/new">NEW APPLICATION</a></li>
-> <li>Fill in the required fields <b>(Name, Description and Redirect URI)</b> and then press <b>SAVE APP</b> at the bottom of the page</li>
-> <li>In the next section copy the <b>Client ID</b> string and paste it at the bottom of the <b>trakt_request.py</b> file where indicated.</li>
-> </ul>
-> <img width="433" alt="Screenshot 2023-01-03 at 4 39 58 PM" src="https://user-images.githubusercontent.com/26089090/210547593-d7103e6e-f562-43a9-8436-386cc34a4314.png">
+Warning, you need to have a **public account** in order to use the API.
 
+## Setup
 
-<ul>
-<li>Clone the repository to your machine</li>
-<li>Open a terminal instance within the cloned folder</li>
-<li>Install requirements issuing the following command:</li>
-</ul>
+Clone the project and create the .env file
 
-```bash 
+```bash
+cd trakt_backup
+cp .env.example .env
+```
+
+### Trakt API key
+
+- Create an API key here: https://trakt.tv/oauth/applications/new
+  - Fill in the required fields <b>(Name, Description and Redirect URI)</b> and then press <b>SAVE APP</b> at the bottom of the page
+- Copy the **Client ID** field inside the .env file
+- Fill other fields in the .env file if you don't need to specify it when running the script
+
+## Requirements
+
+Setup a venv and install requirements:
+
+```bash
+python3.9 -m venv ./venv
+source venv/bin/activate
 pip install -r requirements.txt 
 ```
-<ul>
-<li>Run trakt_backup.py using the command:</li>
-</ul>
+
+## Usage
+
+Interactive mode:
 
 ```bash 
-python ./trakt_backup.py
-```
-You can also run the script adding command line arguments as follows:
-<ul>
-<li>The first argument is used to specify the id of the user whose profile needs to be backed up <b>(if left blank the username will be requested by the program)</b></li>
-<li>The second argument is used to specify the format used to save the files on your machine <b>(if left blank the program will default to JSON)</b></li>
-</ul>
-
-Example:
-
-```bash 
-python ./trakt_backup.py user1
+python ./trakt_backup.py -i
 ```
 
-Begins backing up files for user "user1".
+You can specify the username and format using the options:
 
-```bash 
-python ./trakt_backup.py user1 csv
+```bash
+python ./trakt_backup.py -u user -f csv
 ```
 
-Begins backing up files for user "user1" using "csv" format.
+```
+usage: trakt_backup.py [-h] [-i] [-u USERNAME] [-f FORMAT]
 
-<b>(Supported formats: JSON, csv, XML)</b>
+Backup your Trakt data
+
+options:
+  -h, --help            show this help message and exit
+  -i, --interactive
+  -u USERNAME, --username USERNAME
+                        Your Trakt username
+  -f FORMAT, --format FORMAT
+                        File type to save your data in (json, csv, xml)
+```
+
+## Cron
+
+Want to backup periodically ? Simply setup a cron:
+
+```
+5 3 * * * root /<path>/trakt_backup/venv/bin/python /<path>/trakt_backup/trakt_backup.py
+```
+
+Every day at 03:05 (https://crontab.guru/)

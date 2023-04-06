@@ -24,9 +24,15 @@ cp .env.example .env
 
 Setup a venv and install requirements:
 
+
 ```bash
 python3.9 -m venv ./venv
+
+# If you use bash
 source venv/bin/activate
+# If you use fish
+source venv/bin/activate.fish
+
 pip install -r requirements.txt 
 ```
 
@@ -63,7 +69,7 @@ options:
 Want to backup periodically ? Simply setup a cron:
 
 ```
-5 3 * * * root /<path>/trakt_backup/venv/bin/python /<path>/trakt_backup/trakt_backup.py
+30 12 * * * root /<path>/trakt_backup/venv/bin/python /<path>/trakt_backup/trakt_backup.py
 ```
 
-Every day at 03:05 (https://crontab.guru/)
+Every day at 12:30 (https://crontab.guru/)

@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from trakt_request import TraktRequest
 
 load_dotenv()
-
+# We load the necessary infos from the env file
 TRAKT_API_KEY = os.getenv("TRAKT_API_KEY")
 TRAKT_USERNAME = os.getenv("TRAKT_USERNAME") if os.getenv("TRAKT_USERNAME") else ""
 BACKUP_ROOT_PATH = os.getenv("BACKUP_ROOT_PATH") if os.getenv("BACKUP_ROOT_PATH") else ""

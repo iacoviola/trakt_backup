@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <title>Trakt Backup</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <body>
+        <div style="margin:0 auto; width:200px; height:200px;">
+            <form action="/backup" method="get">
+                <input type="text" name="username" placeholder="Username" /><br>
+                <select name="filetype">
+                    <option value="json">JSON</option>
+                    <option value="xml">XML</option>
+                    <option value="csv">CSV</option>
+                </select><br>
+                <input type="submit" value="Download" />
+
+                <h3>{{ error }}</h3>
+        </div>
+        <style>
+            input, select{
+                width:200px;
+                box-sizing:border-box;
+                padding:10px;
+                border-radius:5px;
+                border:1px solid #cbcbcb;
+                margin-top:15px;
+                box-shadow:inset 0 1px 2px rgba(0,0,0,0.18);
+            }
+        </style>
+    </body>
+</html>

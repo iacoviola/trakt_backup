@@ -1,37 +1,31 @@
 import datetime
 import os
 import sys
-import subprocess
 import converters.json_to_csv as jtc
 import converters.json_to_xml as jtx
-import argparse
-from dotenv import load_dotenv
+import zipfile
+
+from flask import Flask, request, send_file, render_template
 
 from trakt_request import TraktRequest
 
-load_dotenv()
-# We load the necessary infos from the env file
-TRAKT_API_KEY = os.getenv("TRAKT_API_KEY")
-TRAKT_USERNAME = os.getenv("TRAKT_USERNAME") if os.getenv("TRAKT_USERNAME") else ""
-BACKUP_ROOT_PATH = os.getenv("BACKUP_ROOT_PATH") if os.getenv("BACKUP_ROOT_PATH") else ""
-TRAKT_URL = os.getenv("TRAKT_URL") if os.getenv("TRAKT_URL") else "https://api.trakt.tv/users"
-FILE_TYPE = os.getenv("FILE_TYPE") if os.getenv("FILE_TYPE") else "json"
+app = Flask(__name__)
 
-if not TRAKT_API_KEY:
-    print("Please, add your Trakt API key in the .env file")
-    sys.exit()
+# We load the necessary infos from the env file
+TRAKT_API_KEY = "MY_API_KEY"
+TRAKT_USERNAME = "" #get from request
+TRAKT_URL = "https://api.trakt.tv/users"
+BACKUP_ROOT_PATH = os.path.join(os.getcwd(), "backups")
 
 accepted_file_types = ["json", "csv", "xml"]
 
+# Check if the API key is valid
+if len(TRAKT_API_KEY) != 64:
+    print("Invalid Trakt API key, please check your trakt_request.py file")
+    sys.exit()
 
-def launch_file(filepath):
-    if sys.platform.startswith("darwin"):
-        subprocess.call(("open", filepath))
-    elif os.name == "nt":
-        os.startfile(filepath)
-    elif os.name == "posix":
-        subprocess.call(("xdg-open", filepath))
-
+if not os.path.exists(BACKUP_ROOT_PATH):
+    os.makedirs(BACKUP_ROOT_PATH)
 
 def convert(file_type, path):
     for file in os.listdir(path):
@@ -47,84 +41,66 @@ def convert(file_type, path):
         if not file.startswith("stats"):
             os.remove(os.path.join(path, file))
 
-
-# Check if the API key is valid
-if len(TRAKT_API_KEY) != 64:
-    print("Invalid Trakt API key, please check your trakt_request.py file")
-    sys.exit()
-
-argparser = argparse.ArgumentParser(description="Backup your Trakt data")
-argparser.add_argument("-i", "--interactive", action="store_true")
-argparser.add_argument("-u", "--username", action="store", help="Your Trakt username")
-argparser.add_argument(
-    "-f", "--format", action="store", default="json", help="File type to save your data in (json, csv, xml)"
-)
-args = argparser.parse_args()
-
-if args.interactive:
-    # -Y or --yes to save files in the current working directory (optional)
-    argparser.add_argument(
-        "-Y", "--yes", action="store_true", help="Save files in the current working directory", required=False
-    )
-    # Positional argument for the username (optional)
-    argparser.add_argument("username", nargs="?", help="Your Trakt username")
-    # Positional argument for the file type (optional)
-    argparser.add_argument("filetype", nargs="?", help="File type to save your data in (json, csv, xml)")
-    args = argparser.parse_args()
-
-    # Ask the user if they want to save the files in the current working directory
-    if not args.yes:
-        folder = input(
-            f"Save files here (shell current working directory) ? [Y/n]\n(files will otherwise be saved in {os.path.expanduser('~')}): "
-        )
-    else:
-        folder = "Y"
-
-    if folder.upper() == "Y":
-        root = os.getcwd()
-        BACKUP_ROOT_PATH = os.path.join(root, "trakt_backup")
-    else:
-        root = os.path.expanduser("~")
-        BACKUP_ROOT_PATH = os.path.join(root, "trakt_backup")
-    if args.username:
-        TRAKT_USERNAME = args.username
-    else:
-        TRAKT_USERNAME = input("Enter your Trakt username: ")
-    if args.filetype and args.filetype in accepted_file_types:
-        file_type = args.filetype.lower()
-    else:
-        print("Unsupported or no file type specified, defaulting to json")
-else:
-    if args.username:
-        TRAKT_USERNAME = args.username
-    FILE_TYPE = args.format
+def clear_folder(path):
+    #recursively delete all files in folder
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            os.remove(os.path.join(root, file))
+        for dir in dirs:
+            clear_folder(os.path.join(root, dir))
+            os.rmdir(os.path.join(root, dir))
 
 
-print(f"Files will be saved in: {BACKUP_ROOT_PATH}")
+@app.route("/backup", methods=["GET"])
+def get_backup():
+    if request.method == "GET":
+        TRAKT_USERNAME = request.args.get("username")
+        tmp_file_type = request.args.get("filetype")
+        if TRAKT_USERNAME is not None and TRAKT_USERNAME != "":
+            if tmp_file_type in accepted_file_types or tmp_file_type is not None:
+                FILE_TYPE = tmp_file_type
+            else:
+                FILE_TYPE = "json"
 
-if not os.path.exists(BACKUP_ROOT_PATH):
-    os.makedirs(BACKUP_ROOT_PATH)
+            backup_folder_name = f"{TRAKT_USERNAME}--{datetime.datetime.now().strftime('%Y-%m-%d--%H:%M:%S')}"
+            backup_folder_path = os.path.join(BACKUP_ROOT_PATH, backup_folder_name)
+            print(f"Backup folder name: {BACKUP_ROOT_PATH}")
+            os.makedirs(backup_folder_path)
 
-timestamp = os.path.getmtime(BACKUP_ROOT_PATH)
-backup_folder_name = os.path.join(BACKUP_ROOT_PATH, datetime.datetime.now().strftime("%Y-%m-%d--%H:%M:%S"))
-os.makedirs(backup_folder_name)
-trakt_request = TraktRequest(TRAKT_API_KEY, TRAKT_USERNAME, TRAKT_URL, backup_folder_name)
+            trakt_request = TraktRequest(TRAKT_API_KEY, TRAKT_USERNAME, TRAKT_URL, backup_folder_path)
 
-try:
-    trakt_request.create_data_files()
-except Exception as e:
-    print(e)
-    os.rmdir(backup_folder_name)
-    sys.exit()
+            try:
+                trakt_request.create_data_files()
+            except Exception as e:
+                os.rmdir(backup_folder_path)
+                sys.exit()
 
-if FILE_TYPE != "json":
-    convert(FILE_TYPE, backup_folder_name)
 
-new_backup_folder_name = f"{backup_folder_name}--{FILE_TYPE}"
-os.rename(backup_folder_name, new_backup_folder_name)
+            if FILE_TYPE != "json":
+                convert(FILE_TYPE, backup_folder_path)
 
-print(f"Backup folder name: {new_backup_folder_name}")
+            new_backup_folder_name = f"{backup_folder_path}--{FILE_TYPE}"
+            os.rename(backup_folder_path, new_backup_folder_name)
 
-if args.interactive:
-    launch_file(new_backup_folder_name)
+            print(f"Backup folder name: {new_backup_folder_name}")
+
+            #zip the folder
+            zip_name = f"{new_backup_folder_name}.zip"
+            with zipfile.ZipFile(zip_name, "w", zipfile.ZIP_DEFLATED) as zip:
+                for root, dirs, files in os.walk(new_backup_folder_name):
+                    for file in files:
+                        zip.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(new_backup_folder_name, "..")))
+
+            return send_file(zip_name, mimetype="application/zip")
+        
+        else:
+            if request.args.get("username") == "":
+                return render_template("form.html", error="Please enter a username")
+            return render_template("form.html")
+        
+
+app.run(host="127.0.0.1", port=8080, debug=True)
+
+get_backup()
+
 print("Done.")

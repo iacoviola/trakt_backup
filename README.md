@@ -4,6 +4,15 @@
 
 Warning, you need to have a **public account** in order to use the API.
 
+## Online Version (No API key required)
+You can use this script without having to create your own API key.
+
+Simply go to:
+
+> https://iacoviola.pythonanywhere.com/backup
+
+Enjoy 😃.
+
 ## Setup
 
 Clone the project and create the .env file
